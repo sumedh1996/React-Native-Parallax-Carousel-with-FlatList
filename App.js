@@ -35,16 +35,33 @@ const data = images.map((image, index) => ({
 }));
 
 export default function App() {
+  const scrollX = React.useRef(new Animated.Value(0)).current;
+
+
   return (
     <View style={styles.container}>
       <StatusBar hidden />
-      <FlatList
+      <Animated.FlatList
         data={data}
         keyExtractor={item => item.key}
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled
-        renderItem={({ item }) => {
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        renderItem={({ item, index }) => {
+
+          const inputRange = [
+            (index - 1) * width,
+            index * width,
+            (index + 1) * width
+          ]
+          const translateX = scrollX.interpolate({
+            inputRange,
+            outputRange: [-width * .7, 0, width * .7]
+          })
           return <View style={{
             width,
             justifyContent: 'center',
@@ -70,10 +87,13 @@ export default function App() {
                 borderRadius: 18
 
               }}>
-                <Image source={{ uri: item.photo }} style={{
-                  width: ITEM_WIDTH,
+                <Animated.Image source={{ uri: item.photo }} style={{
+                  width: ITEM_WIDTH * 1.4,
                   height: ITEM_HEIGHT,
-                  resizeMode: 'cover'
+                  resizeMode: 'cover',
+                  transform: [{
+                    translateX
+                  }]
                 }} />
               </View>
               <Image source={{ uri: item.avatar_url }} style={{

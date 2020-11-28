@@ -1,0 +1,1 @@
+# Advanced React Native Parallax Carousel with FlatList and Animated API
